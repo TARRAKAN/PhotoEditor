@@ -5,24 +5,24 @@
 
 class QImage;
 
-class ChannelMixer : public QObject
+class ChannelMixer
 {
-    Q_OBJECT
 public:
-    explicit ChannelMixer(const QImage *const image, int r, int g, int b, QObject *parent = nullptr);
+    explicit ChannelMixer(const QImage &image);
 
-    QImage* changeRed(int num);
-    QImage* changeGreen(int num);
-    QImage* changeBlue(int num);
+    QImage* addRed(int num);
+    QImage* addGreen(int num);
+    QImage* addBlue(int num);
 private:
-    int incRed;
-    int incGreen;
-    int incBlue;
-    QImage* changeColors(QImage *const image);
-    const QImage * sourceImage;
+    QImage const &sourceImage;
+    struct
+    {
+        int red;
+        int green;
+        int blue;
+    }colorsCoeficients;
 
-signals:
-
+    QImage* setColorsCoeficients(QImage *image);
 };
 
 #endif // CHANNELMIXER_H

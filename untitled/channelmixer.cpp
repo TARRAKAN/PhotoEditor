@@ -3,67 +3,55 @@
 #include <QDebug>
 #include <cmath>
 
-ChannelMixer::ChannelMixer(const QImage *const image, int r, int g, int b, QObject *parent /* = nullptr */) :
-    QObject(parent),
-    incRed(r),
-    incGreen(g),
-    incBlue(b),
-    sourceImage(image)
+ChannelMixer::ChannelMixer(const QImage &image) : sourceImage(image), colorsCoeficients({0,0,0})
 {
 
 }
 
-QImage* ChannelMixer::changeRed(int num)
+QImage* ChannelMixer::addRed(int num)
 {
-    incRed = num;
-    QImage *imageToReturn{new QImage(*sourceImage)};
-    changeColors(imageToReturn);
-    return imageToReturn;
+    QImage *imageToReturn{new QImage(sourceImage)};
+    colorsCoeficients.red = num;
+    return setColorsCoeficients(imageToReturn);
 }
 
-QImage* ChannelMixer::changeGreen(int num)
+QImage* ChannelMixer::addGreen(int num)
 {
-    incGreen = num;
-    QImage *imageToReturn{new QImage(*sourceImage)};
-    changeColors(imageToReturn);
-    return imageToReturn;
+    QImage *imageToReturn{new QImage(sourceImage)};
+    colorsCoeficients.green = num;
+    return setColorsCoeficients(imageToReturn);
 }
 
-QImage* ChannelMixer::changeBlue(int num)
+QImage* ChannelMixer::addBlue(int num)
 {
-    incBlue = num;
-    QImage *imageToReturn{new QImage(*sourceImage)};
-    changeColors(imageToReturn);
-    return imageToReturn;
+    QImage *imageToReturn{new QImage(sourceImage)};
+    colorsCoeficients.blue = num;
+    return setColorsCoeficients(imageToReturn);
 }
 
-QImage* ChannelMixer::changeColors(QImage *const image)
+QImage* ChannelMixer::setColorsCoeficients(QImage *image)
 {
-    qDebug() << "Red:" << incRed;
-    qDebug() << "Green:" << incGreen;
-    qDebug() << "Blue:" << incBlue;
-
-    for(int w{0}; w < sourceImage->width(); w++)
+    for(int w{0}; w < image->width(); w++)
     {
-        for(int h{0}; h < sourceImage->height(); h++)
+        for(int h{0}; h < image->height(); h++)
         {
-            QColor color = sourceImage->pixel(w, h);
-            if(incRed > 0)
-                color.setRed(std::min(color.red() + incRed, 255));
+            QColor color = image->pixel(w, h);
+            if(colorsCoeficients.red > 0)
+                color.setRed(std::min(color.red() + colorsCoeficients.red, 255));
             else
-                color.setRed(std::max(color.red() + incRed, 0));
+                color.setRed(std::max(color.red() + colorsCoeficients.red, 0));
 
-            if(incGreen > 0)
-                color.setGreen(std::min(color.green() + incGreen, 255));
+            if(colorsCoeficients.green > 0)
+                color.setGreen(std::min(color.green() + colorsCoeficients.green, 255));
             else
-                color.setGreen(std::max(color.green() + incGreen, 0));
+                color.setGreen(std::max(color.green() + colorsCoeficients.green, 0));
 
-            if(incBlue > 0)
-                color.setBlue(std::min(color.blue() + incBlue, 255));
+            if(colorsCoeficients.blue > 0)
+                color.setBlue(std::min(color.blue() + colorsCoeficients.blue, 255));
             else
-                color.setBlue(std::max(color.blue() + incBlue, 0));
+                color.setBlue(std::max(color.blue() + colorsCoeficients.blue , 0));
 
-            image->setPixel(w, h, color.rgb());
+            image->setPixelColor(w, h, color);
         }
     }
     return image;

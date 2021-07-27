@@ -22,31 +22,32 @@ void MainWindow::on_pushButton_clicked()
                                                     tr("Image Files (*.png *.jpg *.bmp *.jpeg)"));
     //if(image != nullptr) delete image;
 
-    image = new QImage(filename);
-    ui->label_4->setPixmap(QPixmap::fromImage(*image).scaled(ui->label_4->size()));
+    sourceImage = QSharedPointer<QImage>(new QImage(filename));
+    ui->label_4->setPixmap(QPixmap::fromImage(*sourceImage).scaled(ui->label_4->size()));
+    channelMixer = QSharedPointer<ChannelMixer>(new ChannelMixer(*sourceImage));
 }
 
 
 void MainWindow::on_redSlider_valueChanged(int value)
 {
-    ChannelMixer* channelMixer{new ChannelMixer(image, value, ui->greenSlider->value(), ui->blueSlider->value())};
-    finalImage = channelMixer->changeRed(value);
-    ui->label_4->setPixmap(QPixmap::fromImage(finalImage->scaled(ui->label_4->size())));
+    finalImage = QSharedPointer<QImage>(channelMixer->addRed(value));
+    ui->label_4->setPixmap(QPixmap::fromImage(*finalImage).scaled(ui->label_4->size()));
 }
-
 
 void MainWindow::on_greenSlider_valueChanged(int value)
 {
-    ChannelMixer* channelMixer{new ChannelMixer(image, ui->redSlider->value(), value, ui->blueSlider->value())};
-    finalImage = channelMixer->changeGreen(value);
-    ui->label_4->setPixmap(QPixmap::fromImage(finalImage->scaled(ui->label_4->size())));
+    finalImage = QSharedPointer<QImage>(channelMixer->addGreen(value));
+    ui->label_4->setPixmap(QPixmap::fromImage(*finalImage).scaled(ui->label_4->size()));
 }
-
 
 void MainWindow::on_blueSlider_valueChanged(int value)
 {
-    ChannelMixer* channelMixer{new ChannelMixer(image, ui->redSlider->value(), ui->greenSlider->value(), value)};
-    finalImage = channelMixer->changeBlue(value);
-    ui->label_4->setPixmap(QPixmap::fromImage(finalImage->scaled(ui->label_4->size())));
+    finalImage = QSharedPointer<QImage>(channelMixer->addBlue(value));
+    ui->label_4->setPixmap(QPixmap::fromImage(*finalImage).scaled(ui->label_4->size()));
+}
+
+void MainWindow::on_brightnessSlider_valueChanged(int value)
+{
+
 }
 
