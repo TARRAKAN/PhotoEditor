@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <cmath>
 
-ChannelMixer::ChannelMixer(const QImage &image) : sourceImage(image), colorsCoeficients({0,0,0})
+ChannelMixer::ChannelMixer(const QImage &image) : sourceImage(image), colorsCoeficients({0,0,0,0})
 {
 
 }
@@ -29,6 +29,14 @@ QImage* ChannelMixer::addBlue(int num)
     return setColorsCoeficients(imageToReturn);
 }
 
+QImage* ChannelMixer::addBrightness(int num)
+{
+    QImage *imageToReturn{new QImage(sourceImage)};
+    colorsCoeficients.brightness = num;
+    return setColorsCoeficients(imageToReturn);
+}
+
+
 QImage* ChannelMixer::setColorsCoeficients(QImage *image)
 {
     for(int w{0}; w < image->width(); w++)
@@ -50,6 +58,20 @@ QImage* ChannelMixer::setColorsCoeficients(QImage *image)
                 color.setBlue(std::min(color.blue() + colorsCoeficients.blue, 255));
             else
                 color.setBlue(std::max(color.blue() + colorsCoeficients.blue , 0));
+
+            if(colorsCoeficients.brightness > 0)
+            {
+                color.setRed(std::min(color.red() + colorsCoeficients.brightness, 255));
+                color.setGreen(std::min(color.green() + colorsCoeficients.brightness, 255));
+                color.setBlue(std::min(color.blue() + colorsCoeficients.brightness, 255));
+            }
+            else
+            {
+                color.setRed(std::max(color.red() + colorsCoeficients.brightness, 0));
+                color.setGreen(std::max(color.green() + colorsCoeficients.brightness, 0));
+                color.setBlue(std::max(color.blue() + colorsCoeficients.brightness , 0));
+            }
+
 
             image->setPixelColor(w, h, color);
         }

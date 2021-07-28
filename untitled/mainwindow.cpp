@@ -48,6 +48,7 @@ void MainWindow::on_blueSlider_valueChanged(int value)
 
 void MainWindow::on_brightnessSlider_valueChanged(int value)
 {
-
+    finalImage = QSharedPointer<QImage>(channelMixer->addBrightness(value));
+    ui->label_4->setPixmap(QPixmap::fromImage(*finalImage).scaled(ui->label_4->size()));
 }
 
